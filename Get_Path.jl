@@ -1,28 +1,17 @@
-# This script interactively plot soil respiration data from STND files
-# Menu: 
-# 3 sites (Columbi/Fermilab/Temple),
-# 6 years (2016-2021),
-# 7 Rsoil sensors
-# 3*6*7 = 126 options, each one plotting ~ 30,000 data point,  ~ 4 million data 
-
 # Code written by Alexandre A. Renchon, started in April 2021
-
 # This section gets path to raw data (.csv files) 
-
 
 function rsoilpath()
 
-# At the top level of Input, we get the path for the 3 sites
-# Note that adding years will be easy, but will need some slight modification for now (but later can be automatised)
 Sites = ["Col", "Fer", "Tem"]
 n_S = length(Sites)
 Years = string.(collect(2016:2020))
 n_Y = length(Years)
 
+# Site folder
 Path_S = Dict(Sites .=> [readdir("Input", join = true)[i] for i = 1:n_S])
 
-# Inside each site, there is one folder per year (2016-2021 as of April 2021)
-# The line of code below gets the path for each site-year folder 
+# Inside each site folder, there is one folder per year (2016-2021 as of April 2021)
 Path_S_Y = Dict(Sites .=> [readdir(Path_S[S], join = true) for S in Sites])
 
 # There are more folders than just e.g. Fermilab 2021. So we need to know path in Path_S_Y one correspond to year y
