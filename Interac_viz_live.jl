@@ -1,18 +1,33 @@
-# Load data
-Inputs_f = readdir("Input")
-Inputs_Col, Inputs_Fer, Inputs_Tem = [readdir(joinpath("Input", Inputs_f[i])) for i in 1:3]
+# This script interactively plot soil respiration data from STND files
+# Menu: 
+# 3 sites (Columbi/Fermilab/Temple),
+# 6 years (2016-2021),
+# 7 Rsoil sensors
+# 3*6*7 = 126 options, each one plotting ~ 30,000 data point,  ~ 4 million data 
 
-# Read directory for year yyyy
-yeari_Col = reduce(vcat, [findall(occursin.(i, Inputs_Col).==1) for i in string.(collect(2016:2021))])
-yeari_Fer = reduce(vcat, [findall(occursin.(i, Inputs_Fer).==1) for i in string.(collect(2016:2021))])
-yeari_Tem = reduce(vcat, [findall(occursin.(i, Inputs_Tem).==1) for i in string.(collect(2016:2021))])
+# Code written by Alexandre A. Renchon, started in April 2021
 
-Inputs_Col_y = []
-Inputs_Fer_y = []
-Inputs_Tem_y = []
-[push!(Inputs_Col_y, readdir(joinpath("Input", Inputs_f[1], Inputs_Col[i]), join = true)) for i in yeari_Col]
-[push!(Inputs_Fer_y, readdir(joinpath("Input", Inputs_f[2], Inputs_Fer[i]), join = true)) for i in yeari_Fer]
-[push!(Inputs_Tem_y, readdir(joinpath("Input", Inputs_f[3], Inputs_Tem[i]), join = true)) for i in yeari_Tem]
+# This section gets path to raw data (.csv files) 
+
+# At the top level of Input, we get the path for the 3 sites
+Path_S = readdir("Input")
+
+# Inside each site, there is one folder per year (2016-2021 as of April 2021)
+# The line of code below gets the path for each site-year folder 
+Sites = ["Col", "Fer", "Tem"]
+Path_S_Y = Dict(Sites .=> [readdir(joinpath("Input", Inputs_f[i]), join = true) for i in 1:3])
+
+# There are more folders than just e.g. Fermilab 2021. So we need to know path in Path_S_Y one correspond to year y
+Which_year = Dict(Sites .=> [reduce(vcat, [findall(occursin.(i, Path_S_Y[S]).==1) for i in string.(collect(2016:2021))]) for S in Sites])
+
+# Path to inside each folder Site/Year
+Path_S_Y_i = Dict(Sites .=> [[] for i in 1:3])
+[[push!(Path_S_Y_i[S], readdir(Path_S_Y[S][i], join = true)) for i in Which_year[S]] for S in Sites]
+
+
+
+# WIP
+
 
 # Path to .csv files, per sites and per year
 Data_Col_f = []
