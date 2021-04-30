@@ -1,5 +1,7 @@
 include("Load_DataFrames.jl")
 
+Data, datetime, Sites, n_S, Years, n_Y = rsoildata();
+
 # Open a soil resp file, plot time series
 
 using GLMakie

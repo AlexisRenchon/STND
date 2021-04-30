@@ -1,11 +1,11 @@
 # This script load DataFrames 
 
+using DataFrames, Dates, CSV
+include("Get_Path.jl")
+
 function rsoildata()
 
-include("Get_Path.jl")
 Sites, n_S, Years, n_Y, rsoilp = rsoilpath(); # example rsoil["Col"]["2017"][1] 
-
-using DataFrames, Dates, CSV
 
 Data = Dict(Sites .=> [Dict(Years .=> [[] for i in 1:n_Y]) for i in 1:n_S])
 datetime = Dict(Sites .=> [Dict(Years .=> [[] for i in 1:n_Y]) for i in 1:n_S])
