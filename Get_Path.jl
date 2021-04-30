@@ -35,6 +35,6 @@ Path_S_Y_full = Dict(Sites .=> [Dict(Years .=> [[] for i in 1:n_Y]) for i in 1:n
 # Remove non-csv files from Path_S_Y_full
 [[filter!(x -> occursin(".csv", x) == true, Path_S_Y_full[S][Y][1]) for S in Sites] for Y in Years]
 
-return Sites, Years, Path_S_Y_full
+return Sites, n_S, Years, n_Y, Path_S_Y_full
 
 end
