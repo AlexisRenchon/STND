@@ -33,7 +33,7 @@ Path_S_Y_full = Dict(Sites .=> [Dict(Years .=> [[] for i in 1:n_Y]) for i in 1:n
 [[[push!(Path_S_Y_full[S][Y], readdir(Path_S_Y_sf[S][Y][1][i], join=true)) for i = 1:length(Path_S_Y_sf[S][Y][1])] for S in Sites] for Y in Years]
 
 # Remove non-csv files from Path_S_Y_full
-[[filter!(x -> occursin(".csv", x) == true, Path_S_Y_full[S][Y][1]) for S in Sites] for Y in Years]
+[[[filter!(x -> occursin(".csv", x) == true, Path_S_Y_full[S][Y][i]) for i = 1:length(Path_S_Y_full[S][Y])] for S in Sites] for Y in Years]
 
 return Sites, n_S, Years, n_Y, Path_S_Y_full
 

@@ -18,8 +18,10 @@ readate(x) = Date.(x.Year.+2000, x.Month, x.Day) .+ x.Time
 # one option would be Data["Col"]["2017"]["folder_i"]["file_j"]
 # I could create 2 menu which give name of folder (menu 1) and name of files (menu 2)
 # Other, better option is by plot (e.g. Data["Col"]["2017"]["A"] ) 
-[[[push!(Data[S][Y], readata(rsoilp[S][Y][1][i])) for i = 1:length(rsoilp[S][Y][1])] for S in Sites] for Y in Years];
+[[[[push!(Data[S][Y], readata(rsoilp[S][Y][j][i])) for i = 1:length(rsoilp[S][Y][j])] for j = 1:length(rsoilp[S][Y])] for S in Sites] for Y in Years];
 
+
+# need to troubleshoot line below, at what S Y i does it bug?
 [[[push!(datetime[S][Y], readate(Data[S][Y][i])) for i = 1:length(Data[S][Y])] for S in Sites] for Y in Years]
 
 return Data, datetime, Sites, n_S, Years, n_Y
