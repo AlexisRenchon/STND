@@ -7,7 +7,7 @@ Data, datetime, Sites, n_S, Years, n_Y = rsoildata();
 using GLMakie, UnicodeFun
 using PlotUtils: optimize_ticks
 
-fig = Figure()
+fig = Figure(resolution = (2000, 1300), fontsize = 26)
 
 Plots = collect(1:7);
 menu1 = Menu(fig, options = zip(["Columbia", "Fermilab", "Temple"], Sites))
@@ -32,6 +32,7 @@ plot = Node{Any}(Plots[1])
 
 Rsoil = @lift(Data[$site][$yeari][$plot].Flux)
 Tsoil = @lift(Data[$site][$yeari][$plot]."Temperature (C)")
+x = @lift(datetime2rata.(datetime[$site][$yeari][$plot]))
 
 scatter!(ax1, Rsoil, strokewidth = 0, markersize = 5, color = :black)
 scatter!(ax2, Tsoil, strokewidth = 0, markersize = 5, color = :red)
@@ -55,4 +56,5 @@ on(menu3.selection) do s
 end
 
 fig
+
 
