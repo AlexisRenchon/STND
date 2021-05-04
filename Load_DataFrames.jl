@@ -11,11 +11,8 @@ Data = Dict(Sites .=> [Dict(Years .=> [[] for i in 1:n_Y]) for i in 1:n_S])
 datetime = Dict(Sites .=> [Dict(Years .=> [[] for i in 1:n_Y]) for i in 1:n_S])
 
 Types = Dict(["Month", "Day", "Year", "Time", "Flux", "Temperature (C)"] .=> [Int64, Int64, Int64, Time, Float64, Float64])
-readata(x) = (y = DataFrame(CSV.File(x, dateformat = "HH:MM:SS", types = Types, silencewarnings=true)); df = dropmissing(y);
-filter!(df) do row
-    1 <= row.Month <= 12 && 1 <= row.Day <= 31 && row.Year <= 21
-end)
-
+f(m, d, y) = (1 <= m <= 12) && (1 <= d <= 31) && (y <= 21)
+readata(x) = (y = DataFrame(CSV.File(x, dateformat = "HH:MM:SS", types = Types, silencewarnings=true)); df = dropmissing(y); filter!([:Month, :Day, :Year] => f, df))
 readate(x) = Date.(x.Year.+2000, x.Month, x.Day) .+ x.Time
 
 # one option would be Data["Col"]["2017"]["folder_i"]["file_j"]
