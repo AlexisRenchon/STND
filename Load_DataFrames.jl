@@ -11,7 +11,11 @@ Data = Dict(Sites .=> [Dict(Years .=> [[] for i in 1:n_Y]) for i in 1:n_S])
 datetime = Dict(Sites .=> [Dict(Years .=> [[] for i in 1:n_Y]) for i in 1:n_S])
 
 Types = Dict(["Month", "Day", "Year", "Time", "Flux", "Temperature (C)"] .=> [Int64, Int64, Int64, Time, Float64, Float64])
-readata(x) = (y = DataFrame(CSV.File(x, dateformat = "HH:MM:SS", types = Types, silencewarnings=true)); df = dropmissing(y); df = delete!(df, findall(df.Month .> 12)); df = delete!(df, findall(df.Month .< 1)); df = delete!(df, findall(df.Year .> 21)); df = delete!(df, findall(df.Day .< 1)); df = delete!(df, findall(df.Day .> 31))) 
+readata(x) = (y = DataFrame(CSV.File(x, dateformat = "HH:MM:SS", types = Types, silencewarnings=true)); df = dropmissing(y);
+filter!(df) do row
+    1 <= row.Month <= 12 && 1 <= row.Day <= 31 && row.Year <= 21
+end)
+
 readate(x) = Date.(x.Year.+2000, x.Month, x.Day) .+ x.Time
 
 # one option would be Data["Col"]["2017"]["folder_i"]["file_j"]
@@ -22,19 +26,14 @@ readate(x) = Date.(x.Year.+2000, x.Month, x.Day) .+ x.Time
 # files IL-2D_FD_20160012_2020-05-15_12-57-32.csv 
 # and IL-4A_FD_20160030_2020-05-15_12-29-35.csv needs to be deleted, not a data file
 # in Fermilab STND Files/Fermilab 2020 Files/FRMI 2020 Soil Respiration/5-15-20
-[[[[push!(Data[S][Y], readata(rsoilp[S][Y][j][i])) for i = 1:length(rsoilp[S][Y][j])] for j = 1:length(rsoilp[S][Y])] for S in Sites] for Y in Years];
+
+# [[[[push!(Data[S][Y], readata(rsoilp[S][Y][j][i])) for i = 1:length(rsoilp[S][Y][j])] for j = 1:length(rsoilp[S][Y])] for S in Sites] for Y in Years];
 
 # the code below is same as the line above, but can be useful for troubleshooting
-# for Y in Years
-#	for S in Sites
-#		for j in 1:length(rsoilp[S][Y])
-#			for i in 1:length(rsoilp[S][Y][j])
-#				push!(Data[S][Y], readata(rsoilp[S][Y][j][i]));
-#				println("Year ", Y, " Site ", S, " j ", j, " i ", i)
-#			end
-#		end
-#	end
-# end
+for Y in Years,	S in Sites, j in 1:length(rsoilp[S][Y]), i in 1:length(rsoilp[S][Y][j])
+	println("Year = ", Y, ", Site = ", S, ", j = ", j, ", i = ", i)
+	push!(Data[S][Y], readata(rsoilp[S][Y][j][i]));
+end
 
 [[[push!(datetime[S][Y], readate(Data[S][Y][i])) for i = 1:length(Data[S][Y])] for S in Sites] for Y in Years];
 
