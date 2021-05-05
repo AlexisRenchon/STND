@@ -23,19 +23,37 @@ fig[1, 1] = vgrid!(
     menu3;
     tellheight = false, width = 200)
 
-ax1 = Axis(fig[1,2], ylabel = to_latex("R_{soil} (\\mumol m^{-2} s^{-1})"))
-ax2 = Axis(fig[2,2], ylabel = to_latex("T_{soil} (°C)"))
+#ax1 = Axis(fig[1,2], ylabel = to_latex("R_{soil} (\\mumol m^{-2} s^{-1})"))
+#ax2 = Axis(fig[2,2], ylabel = to_latex("T_{soil} (°C)"))
 
 site = Node{Any}(Sites[1])
-yeari = Node{Any}(Years[1])
+yeari = Node{Any}(Years[2])
 plot = Node{Any}(Plots[1])
+
+xRsoil = @lift(Point2f0.(datetime2julian.(datetime[$site][$yeari][$plot]), Data[$site][$yeari][$plot].Flux))
+xTsoil = @lift(Point2f0.(datetime2julian.(datetime[$site][$yeari][$plot]), Data[$site][$yeari][$plot]."Temperature (C)"))
 
 Rsoil = @lift(Data[$site][$yeari][$plot].Flux)
 Tsoil = @lift(Data[$site][$yeari][$plot]."Temperature (C)")
-x = @lift(datetime2rata.(datetime[$site][$yeari][$plot]))
+x = @lift(datetime2julian.(datetime[$site][$yeari][$plot]))
+xd = @lift(datetime[$site][$yeari][$plot])
+dateticks = @lift(optimize_ticks(datetime[$site][$yeari][$plot][1], datetime[$site][$yeari][$plot][end])[1])
+dateticks_j = @lift(datetime2julian.(optimize_ticks(datetime[$site][$yeari][$plot][1], datetime[$site][$yeari][$plot][end])[1]))
+dateticks_f = @lift(Dates.format.(optimize_ticks(datetime[$site][$yeari][$plot][1], datetime[$site][$yeari][$plot][end])[1], "mm/dd/yyyy"))
 
-scatter!(ax1, Rsoil, strokewidth = 0, markersize = 5, color = :black)
-scatter!(ax2, Tsoil, strokewidth = 0, markersize = 5, color = :red)
+ax1 = Axis(fig[1,2], ylabel = to_latex("R_{soil} (\\mumol m^{-2} s^{-1})"), xticks = ((dateticks_j) , dateticks_f))
+ax2 = Axis(fig[2,2], ylabel = to_latex("T_{soil} (°C)"), xticks = ((dateticks_j) , dateticks_f))
+
+
+
+#scatter!(ax1, Rsoil, strokewidth = 0, markersize = 5, color = :black)
+#scatter!(ax2, Tsoil, strokewidth = 0, markersize = 5, color = :red)
+
+scatter!(ax1, xRsoil, strokewidth = 0, markersize = 5, color = :black)
+scatter!(ax2, xTsoil, strokewidth = 0, markersize = 5, color = :red)
+
+#ax1.xticks[] = (datetime2julian.(dateticks) , Dates.format.(dateticks, "mm/dd/yyyy"));
+#ax2.xticks[] = (datetime2julian.(dateticks) , Dates.format.(dateticks, "mm/dd/yyyy"));
 
 on(menu1.selection) do s
 	site[] = s
