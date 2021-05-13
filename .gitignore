@@ -5,3 +5,6 @@ Input/
 # ignore VIM temp files
 *~
 *swp
+
+# ignore Mike Mac file
+.DS_Store
